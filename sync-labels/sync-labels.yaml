@@ -4,6 +4,11 @@ name: Sync Labels
 on:
   workflow_dispatch:
     # Allows for manual triggering.
+    inputs:
+      dry_run:
+        description: "If true, don't make any actual changes"
+        required: false
+        default: false
   schedule:
     # Run every week on Sunday at 5:42 AM.
     - cron: '42 5 * * 0'
@@ -21,7 +26,10 @@ jobs:
       #       https://github.com/micnncim/action-label-syncer/pull/68
       - uses: joeyparrish/action-label-syncer@v1.8.0
         with:
-          dry_run: true  # TODO: remove once we are ready to make changes
+          # TODO: delete the next line and uncomment the one after to enable
+          dry_run: true
+          #dry_run: ${{ github.event.inputs.dry_run || false }}
           prune: true
           manifest: sync-labels/configs/${{ github.repository }}.yaml
           repository: ${{ github.repository }}
+          token: ${{ github.token }}

@@ -1,4 +1,4 @@
-# update-issues
+# Shaka Issue Updater
 
 Updates GitHub issues on a timer.
 

@@ -1,0 +1,191 @@
+# GitHub label config for labels that are common to all projects.
+# Should be imported by full configs.
+# "alias" fields indicate the name of the old label that this will replace.
+
+
+# Issue types
+# -----
+
+- name: "type: announcement"
+  aliases:
+    - type:announcement
+    - announcement
+    - survey
+  description: An announcement from the team; generally pinned to the top
+  color: C2E0C6
+
+- name: "type: bug"
+  alias: bug
+  description: Something isn't working correctly
+  color: fc2929
+
+- name: "type: code health"
+  alias: code health
+  description: A code health issue
+  color: C2E0C6
+
+- name: "type: CI"
+  # No alias; did not exist before
+  description: An issue with our continuous integration tests
+  color: C2E0C6
+
+- name: "type: docs"
+  aliases:
+    - docs
+    - documentation
+  description: Improvements or fixes to documentation
+  color: C2E0C6
+
+- name: "type: enhancement"
+  alias: enhancement
+  description: New feature or request
+  color: 84b6eb
+
+- name: "type: external"
+  alias: external
+  description: An issue with an external dependency; not our issue; sometimes kept open for tracking
+  color: C2E0C6
+
+- name: "type: performance"
+  alias: performance
+  description: A performance issue
+  color: C2E0C6
+
+- name: "type: process"
+  alias: process
+  description: A process issue, such as an issue with the release process
+  color: C2E0C6
+
+- name: "type: question"
+  alias: question
+  description: A question from the community
+  color: cc317c
+
+
+# Issue status
+# -----
+
+- name: "status: archived"
+  alias: archived
+  description: Archived and locked; will not be updated
+  color: ededed
+
+- name: "status: duplicate"
+  alias: duplicate
+  description: A duplicate of another issue; should be closed after linking to the original issue
+  color: cccccc
+
+- name: "status: infeasible"
+  alias: infeasible
+  description: The requested feature is not currently feasible
+  color: cccccc
+
+- name: "status: unable to reproduce"
+  alias: unable to reproduce
+  description: Issue could not be reproduced by the team
+  color: "666666"
+
+- name: "status: waiting on response"
+  alias: waiting on response
+  description: Waiting on a response from the reporter(s) of the issue
+  color: c6c666
+
+- name: "status: will not implement"
+  alias: will not implement
+  description: The team chooses not to implement this enhancement
+  color: cccccc
+
+- name: "status: working as intended"
+  alias: working as intended
+  description: The behavior is intended; this is not a bug
+  color: cccccc
+
+
+# Issue flags
+# -----
+
+- name: "flag: bot ignore"
+  alias: bot ignore
+  description: Asks CI bots that maintain issues to ignore this issue
+  color: fef2c0
+
+- name: "flag: good first issue"
+  aliases:
+    - easy?
+    - good first issue
+  description: This might be a relatively easy issue; good for new contributors
+  color: fef2c0
+
+- name: "flag: seeking PR"
+  aliases:
+    - contributions welcome
+    - help wanted
+  description: We are actively seeking PRs for this; we do not currently expect the core team will resolve this
+  color: fef2c0
+
+
+# Priorities
+# -----
+
+- name: "priority: P0"
+  alias: priority:P0
+  description: Broken for everyone; no workaround; urgent
+  color: b60205
+
+- name: "priority: P1"
+  alias: priority:P1
+  description: Big impact or workaround impractical; resolve before feature release
+  color: F7EB55
+
+- name: "priority: P2"
+  alias: priority:P2
+  description: Smaller impact or easy workaround
+  color: BFD4F2
+
+- name: "priority: P3"
+  alias: priority:P3
+  description: Useful but not urgent
+  color: 2B76AD
+
+- name: "priority: P4"
+  alias: priority:P4
+  description: Nice to have / wishful thinking
+  color: 4A376D
+
+
+# Affected platforms
+# -----
+
+- name: "platform: Linux"
+  # No alias; did not exist before
+  description: Issues affecting Linux
+  color: f9d0c4
+
+- name: "platform: macOS"
+  # No alias; did not exist before
+  description: Issues affecting macOS
+  color: f9d0c4
+
+- name: "platform: Windows"
+  # No alias; did not exist before
+  description: Issues affecting Windows
+  color: f9d0c4
+
+
+# Automation labels (used by release-please-action, dependabot, etc)
+# -----
+
+- name: "autorelease: pending"
+  # No alias; default label used by release-please-action
+  color: ededed
+
+- name: "autorelease: tagged"
+  # No alias; default label used by release-please-action
+  color: ededed
+
+# TODO(joeyparrish): Should we add configs for dependabot to bring this inline
+# with the structure of our other labels?
+- name: dependencies
+  # No alias; default label used by dependabot for PRs
+  description: Pull requests that update a dependency file
+  color: ededed

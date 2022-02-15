@@ -1,0 +1,128 @@
+# GitHub label config for shaka-player
+# These are the labels unique to the project.  See common.yaml for labels that
+# all projects share.
+
+
+- import: ../common/common.yaml
+- import: ../common/browsers.yaml
+- import: ../common/media-consumption.yaml
+
+
+# Issue types
+# -----
+
+- name: "type: accessibility"
+  alias: comp:accessibility
+  description: An accessibility issue
+  color: C2E0C6
+
+
+# Affected components
+# -----
+
+- name: "component: ads"
+  alias: comp:ads
+  description: The issue involves the Shaka Player ads API or the use of other ad SDKs
+  color: C2E0C6
+
+- name: "component: build system"
+  # No alias; did not exist before
+  description: The issue involves the build system of Shaka Player
+  color: c2e0c6
+
+- name: "component: captions/subtitles"
+  alias: captions/subtitles
+  description: The issue involves captions or subtitles
+  color: C2E0C6
+
+- name: "component: DASH"
+  # No alias; did not exist before
+  description: The issue involves the MPEG DASH manifest format
+  color: c2e0c6
+
+- name: "component: demo page"
+  alias: demo page
+  description: The issue is in the demo page; does not affect production applications
+  color: C2E0C6
+
+- name: "component: EME"
+  alias: EME
+  description: The issue involves the Encrypted Media Extensions web API
+  color: C2E0C6
+
+- name: "component: HLS"
+  alias: HLS
+  description: The issue involves Apple's HLS manifest format
+  color: c2e0c6
+
+- name: "component: networking"
+  # No alias; did not exist before
+  description: The issue involves the networking system of Shaka Player
+  color: c2e0c6
+
+- name: "component: offline"
+  alias: demo page
+  description: The issue involves the offline storage system of Shaka Player
+  color: C2E0C6
+
+- name: "component: tests"
+  # No alias; did not exist before
+  description: The issue involves our automated tests (generally; otherwise use a more specific component)
+  color: c2e0c6
+
+- name: "component: TTML"
+  alias: TTML
+  description: The issue involves TTML subtitles specifically
+  color: C2E0C6
+
+- name: "component: UI"
+  alias: UI
+  description: The issue involves the Shaka Player UI
+  color: C2E0C6
+
+- name: "component: WebVTT"
+  # No alias; did not exist before
+  description: The issue involves WebVTT subtitles specifically
+  color: c2e0c6
+
+
+# Issue flags
+# -----
+
+- name: "flag: CORS issue"
+  alias: CORS issue
+  description: An issue with the usage of Cross Origin Resource Sharing (CORS)
+  color: fef2c0
+
+- name: "flag: Why didn't we catch this sooner"
+  alias: Why didn't we catch this sooner?
+  description: This issue is embarassing; we may still need an automated test that could have prevented this issue
+  color: fef2c0
+
+
+# Affected platforms
+# -----
+
+- name: "platform: Android"
+  # No alias; did not exist before
+  description: Issues affecting Android
+  color: f9d0c4
+
+- name: "platform: iOS"
+  # No alias; did not exist before
+  description: Issues affecting iOS
+  color: f9d0c4
+
+- name: "platform: TV/STB"
+  alias: TV/STB
+  description: Issues affecting smart TV or set-top box platforms
+  color: f9d0c4
+
+
+# Outdated labels that we choose not to delete
+# -----
+
+- name: "zzz-outdated: Chrome PTS/DTS bug"
+  alias: Chrome PTS/DTS bug
+  description: Related to the Chrome PTS/DTS bugs that were present from 2016 - 2019; do not use for new issues
+  color: b60205

@@ -1,0 +1,55 @@
+# GitHub label config for shaka-streamer
+# These are the labels unique to the project.  See common.yaml for labels that
+# all projects share.
+
+
+- import: ../common/common.yaml
+
+
+# Affected components
+# -----
+
+- name: "component: DASH"
+  # No alias; did not exist before
+  description: An issue with DASH output
+  color: c2e0c6
+
+- name: "component: HLS"
+  # No alias; did not exist before
+  description: An issue with HLS output
+  color: c2e0c6
+
+- name: "component: live"
+  # No alias; did not exist before
+  description: An issue with live stream output
+  color: c2e0c6
+
+- name: "component: VOD"
+  # No alias; did not exist before
+  description: An issue with VOD (Video On Demand) output
+  color: c2e0c6
+
+- name: "component: multi-period"
+  # No alias; did not exist before
+  description: An issue with multi-period output
+  color: c2e0c6
+
+- name: "component: transcoder"
+  # No alias; did not exist before
+  description: An issue with the transcoder node
+  color: c2e0c6
+
+- name: "component: packager"
+  # No alias; did not exist before
+  description: An issue with the packager node
+  color: c2e0c6
+
+- name: "component: cloud upload"
+  # No alias; did not exist before
+  description: An issue with cloud upload support
+  color: c2e0c6
+
+- name: "component: autodetection"
+  # No alias; did not exist before
+  description: An issue with autodetection of input features
+  color: c2e0c6

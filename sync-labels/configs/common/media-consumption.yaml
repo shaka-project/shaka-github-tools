@@ -1,0 +1,12 @@
+# GitHub label config for media-consumption projects.
+# Should be imported by full configs.
+# "alias" fields indicate the name of the old label that this will replace.
+
+
+# Issue status
+# -----
+
+- name: "status: bad content"
+  alias: bad content
+  description: Caused by invalid, broken, or unsupported content
+  color: "666666"

@@ -1,0 +1,35 @@
+# GitHub label config for shaka-player-embedded
+# These are the labels unique to the project.  See common.yaml for labels that
+# all projects share.
+
+
+- import: ../common/common.yaml
+- import: ../common/media-consumption.yaml
+
+
+# Affected components
+# -----
+
+- name: "component: JS"
+  # No alias; did not exist before
+  description: The issue involves the JavaScript bindings or implementation of Web APIs
+  color: C2E0C6
+
+- name: "component: media"
+  # No alias; did not exist before
+  description: The issue involves media components (demuxing, decoding, playback, etc.)
+  color: C2E0C6
+
+- name: "component: Widevine"
+  alias: widevine
+  description: The issue involves the Widevine CDM
+  color: C2E0C6
+
+
+# Affected platforms
+# -----
+
+- name: "platform: iOS"
+  # No alias; did not exist before
+  description: Issues affecting iOS
+  color: f9d0c4

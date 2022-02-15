@@ -1,0 +1,27 @@
+# GitHub label config for browser-based projects.
+# Should be imported by full configs.
+# "alias" fields indicate the name of the old label that this will replace.
+
+
+# Affected browsers
+# -----
+
+- name: "browser: Chrome"
+  # No alias; did not exist before
+  description: Issues affecting Chrome or Chromium derivatives (except Edge)
+  color: f9d0c4
+
+- name: "browser: Firefox"
+  # No alias; did not exist before
+  description: Issues affecting Firefox or Gecko derivatives
+  color: f9d0c4
+
+- name: "browser: Safari"
+  # No alias; did not exist before
+  description: Issues affecting Safari or WebKit derivatives
+  color: f9d0c4
+
+- name: "browser: Edge"
+  # No alias; did not exist before
+  description: Issues affecting Microsoft Edge (any version)
+  color: f9d0c4

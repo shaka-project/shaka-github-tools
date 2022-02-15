@@ -1,0 +1,30 @@
+# GitHub label config for generic-webdriver-server
+# These are the labels unique to the project.  See common.yaml for labels that
+# all projects share.
+
+
+- import: ../common/common.yaml
+
+
+# Affected platforms
+# -----
+
+- name: "platform: Chromecast"
+  # No alias; did not exist before
+  description: Issues affecting Chromecast
+  color: f9d0c4
+
+- name: "platform: ChromeOS"
+  # No alias; did not exist before
+  description: Issues affecting ChromeOS
+  color: f9d0c4
+
+- name: "platform: Tizen"
+  # No alias; did not exist before
+  description: Issues affecting Tizen
+  color: f9d0c4
+
+- name: "platform: Xbox One"
+  # No alias; did not exist before
+  description: Issues affecting Xbox One
+  color: f9d0c4

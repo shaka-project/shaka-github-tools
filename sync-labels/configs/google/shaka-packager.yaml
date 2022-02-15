@@ -1,0 +1,39 @@
+# GitHub label config for shaka-packager
+# These are the labels unique to the project.  See common.yaml for labels that
+# all projects share.
+
+
+- import: ../common/common.yaml
+- import: ../common/media-consumption.yaml
+
+
+# Affected components
+# -----
+
+- name: "component: HLS"
+  alias: hls
+  description: The issue involves HLS output
+  color: C2E0C6
+
+- name: "component: DASH"
+  # No alias; did not exist before
+  description: The issue involves DASH output
+  color: C2E0C6
+
+- name: "component: text"
+  # No alias; did not exist before
+  description: The issue involves text streams (subtitles or captions)
+  color: C2E0C6
+
+- name: "component: HTTP upload"
+  # No alias; did not exist before
+  description: The issue involves HTTP upload
+  color: C2E0C6
+
+
+# Issue flags
+# -----
+- name: "flag: spec compliance"
+  alias: spec compliance
+  description: An issue with compliance to DASH, HLS, or other specs
+  color: 5319e7

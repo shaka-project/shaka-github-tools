@@ -1,6 +1,6 @@
 /*! @license
- * Shaka Player
- * Copyright 2016 Google LLC
+ * Shaka Player Update Issues Tool
+ * Copyright 2022 Google LLC
  * SPDX-License-Identifier: Apache-2.0
  */
 

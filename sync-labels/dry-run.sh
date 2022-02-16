@@ -1,5 +1,9 @@
 #!/bin/bash
 
+# Shaka Sync Labels Tool
+# Copyright 2022 Google LLC
+# SPDX-License-Identifier: Apache-2.0
+
 # Do a dry-run of syncing all repos, and log the results.  Specify a file
 # containing a GitHub personal access token, which does not need any special
 # permissions.

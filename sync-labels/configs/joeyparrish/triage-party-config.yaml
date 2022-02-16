@@ -1,0 +1,6 @@
+# GitHub label config for triage-party-config
+# These are the labels unique to the project.  See common.yaml for labels that
+# all projects share.
+
+
+- import: ../common/common.yaml

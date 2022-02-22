@@ -1,0 +1,94 @@
+name: Sync Common Workflows
+
+# Sync common workflows across repos.  If a workflow template changes here,
+# this will create a PR in each of our other repos to update the actual
+# workflows.  This is only done for workflows which are already installed with
+# the same names as used here.
+#
+# The token used by this workflow (SHAKA_BOT_PR_TOKEN) is associated with the
+# "shaka-bot" account, and must have at least "workflow" and "read:org"
+# permissions.
+
+on:
+  workflow_dispatch:
+    # Allows for manual triggering.
+  push:
+    branches:
+      - main
+    paths:
+      - .github/workflows/sync-common-workflows.json
+      - sync-labels/sync-labels.yaml
+      - update-issues/update-issues.yaml
+      - validate-pr-title/validate-pr-title.yaml
+
+env:
+  CONFIG: .github/workflows/sync-common-workflows.json
+  PR_BRANCH: sync-common-workflows
+
+jobs:
+  sync-workflows:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          path: workflows
+      - name: Sync Workflows
+        run: |
+          git config --global user.email "shaka-bot@users.noreply.github.com"
+          git config --global user.name "Shaka Bot"
+          echo "${{ secrets.SHAKA_BOT_PR_TOKEN }}" | gh auth login --with-token
+
+          for REPO in $(cat workflows/$CONFIG | jq -r .repos[]); do
+            # Clone each repo as a fork under shaka-bot.
+            gh repo fork "$REPO" --clone=true
+            FORK="shaka-bot/$(basename $REPO)"
+
+            # Use a subshell to change directories.  The working directory will
+            # revert when the subshell ends, so each loop starts from the same
+            # place.
+            (
+              cd $(basename "$REPO")
+              # Create a local branch for a potential PR.
+              git checkout -b "$PR_BRANCH"
+
+              for WORKFLOW in $(cat ../workflows/$CONFIG | jq -r .workflows[]); do
+                # Only update a workflow if that repo uses it.
+                if [[ -e ".github/workflows/$(basename $WORKFLOW)" ]]; then
+                  cp ../workflows/$WORKFLOW .github/workflows/
+                  git add ".github/workflows/$(basename $WORKFLOW)"
+                  echo "Syncing $(basename $WORKFLOW) in $REPO"
+                else
+                  echo "Skipping $(basename $WORKFLOW) in $REPO"
+                fi
+              done
+
+              # If anything has changed, generate a commit in a PR branch.
+              if ! git diff --cached --quiet; then
+                echo "chore: Sync common workflows" > .sync-pr-title
+
+                echo "This is an automated sync of common workflows for this organization." > .sync-pr-body
+                echo "The upstream source is:" >> .sync-pr-body
+                echo "https://github.com/$GITHUB_REPOSITORY/commit/$GITHUB_SHA" >> .sync-pr-body
+
+                (cat .sync-pr-title; echo; cat .sync-pr-body) > .sync-pr-message
+                git commit -F .sync-pr-message
+                git push -f "https://${{ secrets.SHAKA_BOT_PR_TOKEN }}@github.com/$FORK" "HEAD:$PR_BRANCH"
+                echo "Pushed to branch in $REPO"
+
+                # If there's not an open PR from that branch, create one.
+                PR_URL=$(gh pr list -H "$PR_BRANCH" --json url | jq -r first.url)
+                if [[ "$PR_URL" == "null" ]]; then
+                  gh pr create \
+                      --title "$(cat .sync-pr-title)" \
+                      --body-file .sync-pr-body \
+                      --head shaka-bot:$PR_BRANCH
+                  echo "Created PR in $REPO"
+                else
+                  gh pr edit "$PR_URL" --body-file .sync-pr-body
+                  echo "Updated PR body in $REPO"
+                fi
+              else
+                echo "No changes in $REPO"
+              fi
+            )
+          done

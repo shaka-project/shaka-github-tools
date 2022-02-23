@@ -39,17 +39,35 @@ jobs:
           echo "${{ secrets.SHAKA_BOT_PR_TOKEN }}" | gh auth login --with-token
 
           for REPO in $(cat workflows/$CONFIG | jq -r .repos[]); do
-            # Clone each repo as a fork under shaka-bot.
-            gh repo fork "$REPO" --clone=true
+            # Fork each repo under shaka-bot if we haven't yet.
+            gh repo fork "$REPO" --clone=false
+            # Some messages from "gh repo fork" don't end in a newline.
+            # Add a newline to clean up the logs.
+            echo ""
+
+            # Pause between forking and cloning.  This seems to fix errors that
+            # occur when trying to clone in one step or trying to fork and then
+            # immediately clone.
+            sleep 5
+
+            # Clone each forked repo.
             FORK="shaka-bot/$(basename $REPO)"
+            git clone "https://${{ secrets.SHAKA_BOT_PR_TOKEN }}@github.com/$FORK"
 
             # Use a subshell to change directories.  The working directory will
             # revert when the subshell ends, so each loop starts from the same
             # place.
             (
               cd $(basename "$REPO")
-              # Create a local branch for a potential PR.
-              git checkout -b "$PR_BRANCH"
+
+              # Add the upstream remote and update it.
+              git remote add upstream https://github.com/$REPO
+              git fetch upstream
+
+              # Create a local branch for a potential PR.  Start at
+              # main/master, whichever exists.
+              git checkout -b "$PR_BRANCH" upstream/main || \
+                  git checkout -b "$PR_BRANCH" upstream/master
 
               for WORKFLOW in $(cat ../workflows/$CONFIG | jq -r .workflows[]); do
                 # Only update a workflow if that repo uses it.
@@ -72,7 +90,7 @@ jobs:
 
                 (cat .sync-pr-title; echo; cat .sync-pr-body) > .sync-pr-message
                 git commit -F .sync-pr-message
-                git push -f "https://${{ secrets.SHAKA_BOT_PR_TOKEN }}@github.com/$FORK" "HEAD:$PR_BRANCH"
+                git push -f origin "HEAD:$PR_BRANCH"
                 echo "Pushed to branch in $REPO"
 
                 # If there's not an open PR from that branch, create one.

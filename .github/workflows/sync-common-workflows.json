@@ -1,0 +1,22 @@
+{
+  "repos": [
+    "joeyparrish/karma-local-wd-launcher",
+    "joeyparrish/webdriver-installer",
+    "joeyparrish/triage-party-config",
+    "joeyparrish/trace-anything",
+    "joeyparrish/static-ffmpeg-binaries",
+    "joeyparrish/shaka-github-tools",
+    "google/eme_logger",
+    "google/generic-webdriver-server",
+    "google/eme-encryption-scheme-polyfill",
+    "google/shaka-player",
+    "google/shaka-packager",
+    "google/shaka-player-embedded",
+    "google/shaka-streamer"
+  ],
+  "workflows": [
+    "sync-labels/sync-labels.yaml",
+    "update-issues/update-issues.yaml",
+    "validate-pr-title/validate-pr-title.yaml"
+  ]
+}

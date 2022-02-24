@@ -242,7 +242,7 @@ async function main() {
   milestones.sort(Milestone.compare);
   let nextMilestone = milestones[0];
   if (nextMilestone.version == null) {
-    core.warn('No version milestone found!  Using backlog instead.');
+    core.warning('No version milestone found!  Using backlog instead.');
     nextMilestone = backlog;
   }
 

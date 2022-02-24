@@ -240,10 +240,10 @@ async function main() {
   }
 
   milestones.sort(Milestone.compare);
-  const nextMilestone = milestones[0];
+  let nextMilestone = milestones[0];
   if (nextMilestone.version == null) {
-    core.error('No version milestone found!');
-    process.exit(1);
+    core.warn('No version milestone found!  Using backlog instead.');
+    nextMilestone = backlog;
   }
 
   const success = await processIssues(issues, nextMilestone, backlog);

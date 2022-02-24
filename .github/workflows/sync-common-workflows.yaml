@@ -5,6 +5,10 @@ name: Sync Common Workflows
 # workflows.  This is only done for workflows which are already installed with
 # the same names as used here.
 #
+# The manual trigger can be used to create PRs for specific workflows and repos
+# without regard for the workflow already being installed.  This is useful for
+# distributing workflows for the first time.
+#
 # The token used by this workflow (SHAKA_BOT_PR_TOKEN) is associated with the
 # "shaka-bot" account, and must have at least "workflow" and "read:org"
 # permissions.
@@ -12,6 +16,15 @@ name: Sync Common Workflows
 on:
   workflow_dispatch:
     # Allows for manual triggering.
+    inputs:
+      repos:
+        type: string
+        description: A space-separated list of repos to push to.
+      workflows:
+        type: string
+        description: |
+          A space-separated list of workflows to push.
+          Pushes even if the workflow doesn't exist upstream.
   push:
     branches:
       - main
@@ -38,7 +51,19 @@ jobs:
           git config --global user.name "Shaka Bot"
           echo "${{ secrets.SHAKA_BOT_PR_TOKEN }}" | gh auth login --with-token
 
-          for REPO in $(cat workflows/$CONFIG | jq -r .repos[]); do
+          REPO_LIST="${{ github.event.inputs.repos }}"
+          if [[ "$REPO_LIST" == "" ]]; then
+            REPO_LIST=$(cat workflows/$CONFIG | jq -r .repos[])
+          fi
+
+          WORKFLOW_LIST="${{ github.event.inputs.workflows }}"
+          SKIP_EXISTING=false
+          if [[ "$WORKFLOW_LIST" == "" ]]; then
+            WORKFLOW_LIST=$(cat workflows/$CONFIG | jq -r .workflows[])
+            SKIP_EXISTING=true
+          fi
+
+          for REPO in $REPO_LIST; do
             # Fork each repo under shaka-bot if we haven't yet.
             gh repo fork "$REPO" --clone=false
             # Some messages from "gh repo fork" don't end in a newline.
@@ -69,9 +94,10 @@ jobs:
               git checkout -b "$PR_BRANCH" upstream/main || \
                   git checkout -b "$PR_BRANCH" upstream/master
 
-              for WORKFLOW in $(cat ../workflows/$CONFIG | jq -r .workflows[]); do
-                # Only update a workflow if that repo uses it.
-                if [[ -e ".github/workflows/$(basename $WORKFLOW)" ]]; then
+              for WORKFLOW in $WORKFLOW_LIST; do
+                # Only update a workflow if that repo uses it, or if we're
+                # forced by a manual trigger.
+                if [[ "$SKIP_EXISTING" == "false" || -e ".github/workflows/$(basename $WORKFLOW)" ]]; then
                   cp ../workflows/$WORKFLOW .github/workflows/
                   git add ".github/workflows/$(basename $WORKFLOW)"
                   echo "Syncing $(basename $WORKFLOW) in $REPO"

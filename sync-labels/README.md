@@ -3,8 +3,8 @@
 These are YAML config files to maintain the labels used in our GitHub
 repositories.  The `configs/common/` folder contains labels common across
 repos, and each `.yaml` file in the other folders is named for the repository
-it belongs to.  For example, `configs/google/shaka-player.yaml` is the set of
-labels unique to the `google/shaka-player` repo.
+it belongs to.  For example, `configs/shaka-project/shaka-player.yaml` is the
+set of labels unique to the `shaka-project/shaka-player` repo.
 
 Common labels are imported into each of the repo-specific config files with
 YAML objects that such as this:

@@ -18,7 +18,7 @@ export INPUT_DRY_RUN=true
 export INPUT_PRUNE=true
 
 cd configs
-for INPUT_MANIFEST in google/*.yaml joeyparrish/*.yaml; do
+for INPUT_MANIFEST in shaka-project/*.yaml; do
   echo "$INPUT_MANIFEST"
   echo "====="
   export INPUT_REPOSITORY=$(dirname $INPUT_MANIFEST)/$(basename -s .yaml $INPUT_MANIFEST)

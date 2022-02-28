@@ -5,14 +5,14 @@
     "shaka-project/triage-party-config",
     "shaka-project/static-ffmpeg-binaries",
     "shaka-project/shaka-github-tools",
-    "joeyparrish/trace-anything",
-    "google/eme_logger",
-    "google/generic-webdriver-server",
-    "google/eme-encryption-scheme-polyfill",
-    "google/shaka-player",
-    "google/shaka-packager",
-    "google/shaka-player-embedded",
-    "google/shaka-streamer"
+    "shaka-project/trace-anything",
+    "shaka-project/eme_logger",
+    "shaka-project/generic-webdriver-server",
+    "shaka-project/eme-encryption-scheme-polyfill",
+    "shaka-project/shaka-player",
+    "shaka-project/shaka-packager",
+    "shaka-project/shaka-player-embedded",
+    "shaka-project/shaka-streamer"
   ],
   "workflows": [
     "sync-labels/sync-labels.yaml",

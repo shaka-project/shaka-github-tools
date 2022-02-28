@@ -1,11 +1,11 @@
 {
   "repos": [
-    "joeyparrish/karma-local-wd-launcher",
-    "joeyparrish/webdriver-installer",
-    "joeyparrish/triage-party-config",
+    "shaka-project/karma-local-wd-launcher",
+    "shaka-project/webdriver-installer",
+    "shaka-project/triage-party-config",
+    "shaka-project/static-ffmpeg-binaries",
+    "shaka-project/shaka-github-tools",
     "joeyparrish/trace-anything",
-    "joeyparrish/static-ffmpeg-binaries",
-    "joeyparrish/shaka-github-tools",
     "google/eme_logger",
     "google/generic-webdriver-server",
     "google/eme-encryption-scheme-polyfill",

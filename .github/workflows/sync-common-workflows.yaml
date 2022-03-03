@@ -89,10 +89,8 @@ jobs:
               git remote add upstream https://github.com/$REPO
               git fetch upstream
 
-              # Create a local branch for a potential PR.  Start at
-              # main/master, whichever exists.
-              git checkout -b "$PR_BRANCH" upstream/main || \
-                  git checkout -b "$PR_BRANCH" upstream/master
+              # Create a local branch for a potential PR.  Start at main.
+              git checkout -b "$PR_BRANCH" upstream/main
 
               for WORKFLOW in $WORKFLOW_LIST; do
                 # Only update a workflow if that repo uses it, or if we're

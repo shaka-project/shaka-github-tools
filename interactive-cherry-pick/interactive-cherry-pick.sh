@@ -12,7 +12,7 @@ if [[ "$limit_tag" == "" ]]; then
 fi
 
 upstream_remote="${2:-origin}"
-main_branch="$upstream_remote/${3:-master}"
+main_branch="$upstream_remote/${3:-main}"
 local_target_branch=$(git branch --show-current)
 
 # Read one key as input.

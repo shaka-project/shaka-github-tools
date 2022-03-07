@@ -8,10 +8,12 @@
  * @fileoverview A set of classes to represent GitHub issues & comments.
  */
 
-const github = require('@actions/github');
 const core = require('@actions/core');
+const { GitHub, getOctokitOptions } = require('@actions/github/lib/utils');
+const { retry } = require("@octokit/plugin-retry");
 
-const octokit = github.getOctokit(process.env.GITHUB_TOKEN);
+const Octokit = GitHub.plugin(retry);
+const octokit = new Octokit(getOctokitOptions(process.env.GITHUB_TOKEN));
 const [owner, repo] = process.env.GITHUB_REPOSITORY.split('/');
 
 // Values of "author_association" that indicate a team member:

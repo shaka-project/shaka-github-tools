@@ -108,6 +108,11 @@
   description: Issues affecting Android
   color: f9d0c4
 
+- name: "platform: Cast"
+  # No alias; did not exist before
+  description: Issues affecting Cast devices
+  color: f9d0c4
+
 - name: "platform: iOS"
   # No alias; did not exist before
   description: Issues affecting iOS
@@ -116,6 +121,11 @@
 - name: "platform: TV/STB"
   alias: TV/STB
   description: Issues affecting smart TV or set-top box platforms
+  color: f9d0c4
+
+- name: "platform: Xbox"
+  # No alias; did not exist before
+  description: Issues affecting Xbox
   color: f9d0c4
 
 

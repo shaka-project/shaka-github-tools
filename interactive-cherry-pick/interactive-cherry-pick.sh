@@ -60,7 +60,9 @@ git cherry -v \
 
 # Remove the leading plus signs and trim the sha1s in the file to 8 characters,
 # to match what "git rebase -i" outputs.
-sed -i.backup -e 's/^+ \(\S\S\S\S\S\S\S\S\)\S*/\1/' "$cp_list"
+# NOTE: Take care to ensure that changes to this still work on macOS, which uses
+# BSD sed instead of GNU sed.
+sed -i.backup -re 's/^\+ ([a-fA-F0-9]{8})[a-fA-F0-9]*/\1/' "$cp_list"
 
 # Append instructions, the way "git rebase -i" does.
 cat >> "$cp_list" <<EOF

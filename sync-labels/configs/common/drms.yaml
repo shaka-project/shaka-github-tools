@@ -1,0 +1,27 @@
+# GitHub label config for drms projects.
+# Should be imported by full configs.
+# "alias" fields indicate the name of the old label that this will replace.
+
+
+# Issue status
+# -----
+
+- name: "component: Widevine"
+  # No alias; did not exist before
+  description: The issue involves the Widevine DRM
+  color: "c2e0c6"
+
+- name: "component: PlayReady"
+  # No alias; did not exist before
+  description: The issue involves the PlayReady DRM
+  color: "c2e0c6"
+
+- name: "component: FairPlay"
+  # No alias; did not exist before
+  description: The issue involves the FairPlay DRM
+  color: "c2e0c6"
+
+- name: "component: ClearKey"
+  # No alias; did not exist before
+  description: The issue involves the ClearKey DRM
+  color: "c2e0c6"

@@ -24,6 +24,11 @@
   description: Issues affecting Tizen
   color: f9d0c4
 
+- name: "platform: WebOS"
+  # No alias; did not exist before
+  description: Issues affecting WebOS
+  color: f9d0c4
+
 - name: "platform: Xbox One"
   # No alias; did not exist before
   description: Issues affecting Xbox One

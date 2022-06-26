@@ -139,6 +139,16 @@
   description: Issues affecting Xbox
   color: f9d0c4
 
+- name: "platform: Playstation 4"
+  # No alias; did not exist before
+  description: Issues affecting Playstation 4
+  color: f9d0c4
+
+- name: "platform: Playstation 5"
+  # No alias; did not exist before
+  description: Issues affecting Playstation 5
+  color: f9d0c4
+
 
 # Outdated labels that we choose not to delete
 # -----

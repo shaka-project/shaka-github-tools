@@ -56,6 +56,11 @@
   description: The issue involves Apple's HLS manifest format
   color: c2e0c6
 
+- name: "component: MSS"
+  alias: MSS
+  description: The issue involves Microsoft Smooth Streaming manifest format
+  color: c2e0c6
+
 - name: "component: networking"
   # No alias; did not exist before
   description: The issue involves the networking system of Shaka Player

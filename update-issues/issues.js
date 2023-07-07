@@ -307,6 +307,8 @@ class Issue extends GitHubObject {
     this.milestone = obj.milestone ? new Milestone(obj.milestone) : null;
     /** @type {boolean} */
     this.isPR = !!obj.pull_request;
+    /** @type {boolean} */
+    this.merged = obj.merged_at != null;
   }
 
   /**
@@ -527,7 +529,7 @@ class Issue extends GitHubObject {
         octokit.rest.issues.listForRepo, Issue, {
           state: 'all',
         });
-    return all.filter(issue => !issue.isPR);
+    return all;
   }
 }
 

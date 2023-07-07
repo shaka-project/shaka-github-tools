@@ -87,7 +87,16 @@ describe('update-issues tool', () => {
     ageInDays: 0,
   });
 
-  it('archives old issues', async () => {
+  function reopenComment(author, ageInDays = 0) {
+    return new MockComment({
+      author,
+      ageInDays,
+      fromTeam: false,
+      body: '@shaka-bot reopen',
+    });
+  }
+
+  it('archives old issues and PRs', async () => {
     const matchingIssues = [
       new MockIssue({
         closed: true,
@@ -96,6 +105,11 @@ describe('update-issues tool', () => {
       new MockIssue({
         closed: true,
         closedDays: 100,
+      }),
+      new MockIssue({
+        closed: true,
+        closedDays: 100,
+        isPR: true,
       }),
       // This has the "archived" label, but is not locked.  It should still get
       // locked.
@@ -141,12 +155,17 @@ describe('update-issues tool', () => {
     }
   });
 
-  it('unarchives issues', async () => {
+  it('unarchives issues and PRs', async () => {
     const matchingIssues = [
       // Closed and locked, but the "archived" label has been removed.
       new MockIssue({
         closed: true,
         locked: true,
+      }),
+      new MockIssue({
+        closed: true,
+        locked: true,
+        isPR: true,
       }),
     ];
 
@@ -165,7 +184,11 @@ describe('update-issues tool', () => {
 
     for (const issue of matchingIssues) {
       expect(issue.unlock).toHaveBeenCalled();
-      expect(issue.reopen).toHaveBeenCalled();
+      if (issue.isPR) {
+        expect(issue.reopen).not.toHaveBeenCalled();
+      } else {
+        expect(issue.reopen).toHaveBeenCalled();
+      }
     }
     for (const issue of nonMatchingIssues) {
       expect(issue.unlock).not.toHaveBeenCalled();
@@ -176,7 +199,7 @@ describe('update-issues tool', () => {
     }
   });
 
-  it('removes "waiting" label', async () => {
+  it('removes "waiting" label from issues and PRs', async () => {
     const matchingIssues = [
       new MockIssue({
         labels: [STATUS_WAITING],
@@ -192,6 +215,13 @@ describe('update-issues tool', () => {
       new MockIssue({
         labels: [TYPE_BUG, STATUS_WAITING],
         labelAgeInDays: 1,
+        // Most recent comments go first.
+        comments: [externalCommentNew, teamCommentOld],
+      }),
+      new MockIssue({
+        labels: [TYPE_BUG, STATUS_WAITING],
+        labelAgeInDays: 1,
+        isPR: true,
         // Most recent comments go first.
         comments: [externalCommentNew, teamCommentOld],
       }),
@@ -223,7 +253,65 @@ describe('update-issues tool', () => {
     }
   });
 
-  it('closes stale issues', async () => {
+  it('reopens issues on OP request', async () => {
+    const matchingIssues = [
+      // A reopen request by the OP, and more recent than closure of the issue.
+      new MockIssue({
+        author: 'someone',
+        closed: true,
+        closedDays: 1,
+        comments: [reopenComment('someone', /* ageInDays */ 0)],
+      }),
+      // The reopen request need not be the most recent comment.
+      new MockIssue({
+        author: 'someone',
+        closed: true,
+        closedDays: 30,
+        // Most recent comments go first.
+        comments: [
+          externalCommentNew,
+          reopenComment('someone', /* ageInDays */ 10),
+        ],
+      }),
+    ];
+
+    const nonMatchingIssues = [
+      // No reopen request.
+      new MockIssue({
+        author: 'someone',
+        closed: true,
+        closedDays: 1,
+        comments: [],
+      }),
+      // A reopen request by the wrong user (not the OP).
+      new MockIssue({
+        author: 'someone',
+        closed: true,
+        closedDays: 1,
+        comments: [reopenComment('someoneElse', /* ageInDays */ 0)],
+      }),
+      // Closed again more recently than the last reopen request.
+      new MockIssue({
+        author: 'someone',
+        closed: true,
+        closedDays: 3,
+        comments: [reopenComment('someoneElse', /* ageInDays */ 20)],
+      }),
+    ];
+
+    const issues = matchingIssues.concat(nonMatchingIssues);
+
+    await processIssues(issues, nextMilestone, backlog);
+
+    for (const issue of matchingIssues) {
+      expect(issue.reopen).toHaveBeenCalled();
+    }
+    for (const issue of nonMatchingIssues) {
+      expect(issue.reopen).not.toHaveBeenCalled();
+    }
+  });
+
+  it('closes stale issues and PRs', async () => {
     const matchingIssues = [
       new MockIssue({
         labels: [STATUS_WAITING],
@@ -233,6 +321,11 @@ describe('update-issues tool', () => {
         labels: [STATUS_WAITING],
         labelAgeInDays: 100,
         comments: [teamCommentOld],
+      }),
+      new MockIssue({
+        labels: [STATUS_WAITING],
+        labelAgeInDays: 100,
+        isPR: true,
       }),
     ];
 
@@ -262,10 +355,15 @@ describe('update-issues tool', () => {
     }
   });
 
-  it('cleans up labels on closed issues', async () => {
+  it('cleans up labels on closed issues and PRs', async () => {
     const matchingIssues = [
       new MockIssue({
         closed: true,
+        labels: [STATUS_WAITING],
+      }),
+      new MockIssue({
+        closed: true,
+        isPR: true,
         labels: [STATUS_WAITING],
       }),
     ];
@@ -324,6 +422,13 @@ describe('update-issues tool', () => {
         // Most recent comments go first.
         comments: [externalCommentOld, teamCommentOld],
       }),
+      // Won't be touched because it's a PR.
+      new MockIssue({
+        closed: true,
+        isPR: true,
+        labels: [TYPE_QUESTION],
+        comments: [teamCommentOld],
+      }),
     ];
 
     const issues = matchingIssues.concat(nonMatchingIssues);
@@ -340,7 +445,7 @@ describe('update-issues tool', () => {
     }
   });
 
-  it('sets an appropriate milestone', async () => {
+  it('sets an appropriate milestone for issues', async () => {
     const nextMilestoneIssues = [
       // Bugs go to the next milestone.  (If the priority is P0-P2 or unset.)
       new MockIssue({
@@ -439,6 +544,11 @@ describe('update-issues tool', () => {
       new MockIssue({
         labels: [TYPE_ENHANCEMENT],
         closed: true,
+      }),
+      // Won't be assigned to a milestone because it's a PR.
+      new MockIssue({
+        labels: [TYPE_BUG],
+        isPR: true,
       }),
     ];
 

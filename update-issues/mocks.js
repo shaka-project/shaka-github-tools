@@ -122,6 +122,8 @@ class MockIssue extends MockGitHubObject {
       this.comments.push(new MockComment({body}));
     });
     this.loadComments = jasmine.createSpy('loadComments');
+    this.name =
+        (this.isPR ? 'PR #' : 'issue #') + this.number;
   }
 
   hasLabel(name) {

@@ -110,7 +110,7 @@ async function reopenIssues(issue) {
           comment.ageInDays <= issue.closedDays &&
           body.includes('@shaka-bot') &&
           (body.includes('reopen') || body.includes('re-open'))) {
-        core.notice(`Found reopen request for issue #${issue.number}`);
+        core.notice(`Found reopen request for ${issue.name}`);
         await issue.reopen();
         break;
       }
@@ -223,11 +223,11 @@ async function processIssuesAndPRs(issues, nextMilestone, backlog) {
 
   for (const issue of issues) {
     if (issue.hasLabel(FLAG_IGNORE)) {
-      core.info(`Ignoring issue #${issue.number}`);
+      core.info(`Ignoring ${issue.name}`);
       continue;
     }
 
-    core.info(`Processing issue #${issue.number}`);
+    core.info(`Processing ${issue.name}`);
 
     for (const task of ALL_TASKS) {
       try {
@@ -236,7 +236,7 @@ async function processIssuesAndPRs(issues, nextMilestone, backlog) {
         // Make this show up in the Actions UI without needing to search the
         // logs.
         core.error(
-            `Failed to process issue #${issue.number} in task ${task.name}: ` +
+            `Failed to process ${issue.name} in task ${task.name}: ` +
             `${error}\n${error.stack}`);
         success = false;
       }

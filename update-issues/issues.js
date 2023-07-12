@@ -311,6 +311,9 @@ class Issue extends GitHubObject {
     this.isPR = !!obj.pull_request;
     /** @type {boolean} */
     this.merged = obj.merged_at != null;
+    /** @type {string} */
+    this.name =
+        (this.isPR ? 'PR #' : 'issue #') + this.number;
   }
 
   /**

@@ -206,7 +206,7 @@ async function maintainIssueMilestones(issue, nextMilestone, backlog) {
 }
 
 
-const ALL_ISSUE_TASKS = [
+const ALL_TASKS = [
   reopenIssues,
   archiveOldIssuesAndPRs,
   unarchiveIssuesAndPRs,
@@ -216,7 +216,9 @@ const ALL_ISSUE_TASKS = [
   maintainIssueMilestones,
 ];
 
-async function processIssues(issues, nextMilestone, backlog) {
+// Both issues and PRs are fetched by the issues API, and we now process both.
+// PRs have issue.isPR == true.
+async function processIssuesAndPRs(issues, nextMilestone, backlog) {
   let success = true;
 
   for (const issue of issues) {
@@ -227,7 +229,7 @@ async function processIssues(issues, nextMilestone, backlog) {
 
     core.info(`Processing issue #${issue.number}`);
 
-    for (const task of ALL_ISSUE_TASKS) {
+    for (const task of ALL_TASKS) {
       try {
         await task(issue, nextMilestone, backlog);
       } catch (error) {
@@ -261,7 +263,7 @@ async function main() {
     nextMilestone = backlog;
   }
 
-  const success = await processIssues(issues, nextMilestone, backlog);
+  const success = await processIssuesAndPRs(issues, nextMilestone, backlog);
   if (!success) {
     process.exit(1);
   }
@@ -273,7 +275,7 @@ if (require.main == module) {
   main();
 } else {
   module.exports = {
-    processIssues,
+    processIssuesAndPRs,
     TYPE_ACCESSIBILITY,
     TYPE_ANNOUNCEMENT,
     TYPE_BUG,

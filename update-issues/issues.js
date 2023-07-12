@@ -291,6 +291,8 @@ class Event extends GitHubObject {
   }
 }
 
+// Also could be a PR.  Both are returned by the GitHub issue API.
+// PRs have issue.isPR == true.
 class Issue extends GitHubObject {
   /** @param {!Object} obj */
   constructor(obj) {

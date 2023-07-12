@@ -33,7 +33,7 @@ const {
 } = require('./issues.js');
 
 const {
-  processIssues,
+  processIssuesAndPRs,
   TYPE_ACCESSIBILITY,
   TYPE_ANNOUNCEMENT,
   TYPE_BUG,
@@ -140,7 +140,7 @@ describe('update-issues tool', () => {
 
     const issues = matchingIssues.concat(nonMatchingIssues);
 
-    await processIssues(issues, nextMilestone, backlog);
+    await processIssuesAndPRs(issues, nextMilestone, backlog);
 
     for (const issue of matchingIssues) {
       expect(issue.addLabel).toHaveBeenCalledWith(STATUS_ARCHIVED);
@@ -180,7 +180,7 @@ describe('update-issues tool', () => {
 
     const issues = matchingIssues.concat(nonMatchingIssues);
 
-    await processIssues(issues, nextMilestone, backlog);
+    await processIssuesAndPRs(issues, nextMilestone, backlog);
 
     for (const issue of matchingIssues) {
       expect(issue.unlock).toHaveBeenCalled();
@@ -243,7 +243,7 @@ describe('update-issues tool', () => {
 
     const issues = matchingIssues.concat(nonMatchingIssues);
 
-    await processIssues(issues, nextMilestone, backlog);
+    await processIssuesAndPRs(issues, nextMilestone, backlog);
 
     for (const issue of matchingIssues) {
       expect(issue.removeLabel).toHaveBeenCalledWith(STATUS_WAITING);
@@ -301,7 +301,7 @@ describe('update-issues tool', () => {
 
     const issues = matchingIssues.concat(nonMatchingIssues);
 
-    await processIssues(issues, nextMilestone, backlog);
+    await processIssuesAndPRs(issues, nextMilestone, backlog);
 
     for (const issue of matchingIssues) {
       expect(issue.reopen).toHaveBeenCalled();
@@ -343,7 +343,7 @@ describe('update-issues tool', () => {
 
     const issues = matchingIssues.concat(nonMatchingIssues);
 
-    await processIssues(issues, nextMilestone, backlog);
+    await processIssuesAndPRs(issues, nextMilestone, backlog);
 
     for (const issue of matchingIssues) {
       expect(issue.postComment).toHaveBeenCalled();
@@ -376,7 +376,7 @@ describe('update-issues tool', () => {
 
     const issues = matchingIssues.concat(nonMatchingIssues);
 
-    await processIssues(issues, nextMilestone, backlog);
+    await processIssuesAndPRs(issues, nextMilestone, backlog);
 
     for (const issue of matchingIssues) {
       expect(issue.removeLabel).toHaveBeenCalledWith(STATUS_WAITING);
@@ -433,7 +433,7 @@ describe('update-issues tool', () => {
 
     const issues = matchingIssues.concat(nonMatchingIssues);
 
-    await processIssues(issues, nextMilestone, backlog);
+    await processIssuesAndPRs(issues, nextMilestone, backlog);
 
     for (const issue of matchingIssues) {
       expect(issue.postComment).toHaveBeenCalled();
@@ -557,7 +557,7 @@ describe('update-issues tool', () => {
         .concat(clearMilestoneIssues)
         .concat(nonMatchingIssues);
 
-    await processIssues(issues, nextMilestone, backlog);
+    await processIssuesAndPRs(issues, nextMilestone, backlog);
 
     for (const issue of nextMilestoneIssues) {
       expect(issue.setMilestone).toHaveBeenCalledWith(nextMilestone);

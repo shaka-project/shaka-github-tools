@@ -32,6 +32,6 @@ interactive-cherry-pick v3.3.1-main upstream main
 
 ## Defaults
 
-If not specified, the remote defaults to "origin".
+If not specified, the remote defaults to "upstream".
 
 If not specified, the main branch defaults to "main".

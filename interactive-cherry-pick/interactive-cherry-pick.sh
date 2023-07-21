@@ -11,7 +11,7 @@ if [[ "$limit_tag" == "" ]]; then
   exit 1
 fi
 
-upstream_remote="${2:-origin}"
+upstream_remote="${2:-upstream}"
 main_branch="$upstream_remote/${3:-main}"
 local_target_branch=$(git branch --show-current)
 

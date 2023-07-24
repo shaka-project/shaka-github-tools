@@ -60,18 +60,22 @@ const PING_QUESTION_TEXT =
     'Does this answer all your questions? ' +
     'If so, would you please close the issue?';
 
-const CLOSE_STALE_TEXT =
+const CLOSE_STALE_ISSUE_TEXT =
     'Closing due to inactivity. If this is still an issue for you or if you ' +
     'have further questions, the OP can ask shaka-bot to reopen it by ' +
     'including `@shaka-bot reopen` in a comment.';
+
+const CLOSE_STALE_PR_TEXT =
+    'Closing due to inactivity. If the author would like to continue this ' +
+    'PR, they can reopen it (preferred) or start a new one (if needed).';
 
 const PING_INACTIVE_QUESTION_DAYS = 4;
 const CLOSE_AFTER_WAITING_DAYS = 7;
 const ARCHIVE_AFTER_CLOSED_DAYS = 60;
 
 
-async function archiveOldIssues(issue) {
-  // If the issue has been closed for a while, archive it.
+async function archiveOldIssuesAndPRs(issue) {
+  // If the issue or PR has been closed for a while, archive it.
   // Exclude locked issues, so that this doesn't conflict with unarchiveIssues
   // below.
   if (!issue.locked && issue.closed &&
@@ -81,17 +85,21 @@ async function archiveOldIssues(issue) {
   }
 }
 
-async function unarchiveIssues(issue) {
-  // If the archive label is removed from an archived issue, unarchive it.
+async function unarchiveIssuesAndPRs(issue) {
+  // If the archive label is removed from an archived issue or PR, unarchive it.
   if (issue.locked && !issue.hasLabel(STATUS_ARCHIVED)) {
     await issue.unlock();
-    await issue.reopen();
+    // If it's not a PR, reopen it.  Unlike issues, PRs cannot always be
+    // reopened automatically.
+    if (!issue.isPR) {
+      await issue.reopen();
+    }
   }
 }
 
 async function reopenIssues(issue) {
   // If the original author wants an issue reopened, reopen it.
-  if (issue.closed && !issue.hasLabel(STATUS_ARCHIVED)) {
+  if (!issue.isPR && issue.closed && !issue.hasLabel(STATUS_ARCHIVED)) {
     // Important: only load comments if prior filters pass!
     // If we loaded them on every issue, we could exceed our query quota!
     await issue.loadComments();
@@ -102,7 +110,7 @@ async function reopenIssues(issue) {
           comment.ageInDays <= issue.closedDays &&
           body.includes('@shaka-bot') &&
           (body.includes('reopen') || body.includes('re-open'))) {
-        core.notice(`Found reopen request for issue #${issue.number}`);
+        core.notice(`Found reopen request for ${issue.name}`);
         await issue.reopen();
         break;
       }
@@ -110,8 +118,8 @@ async function reopenIssues(issue) {
   }
 }
 
-async function manageWaitingIssues(issue) {
-  // Filter for waiting issues.
+async function manageWaitingIssuesAndPRs(issue) {
+  // Filter for waiting issues and PRs.
   if (!issue.closed && issue.hasLabel(STATUS_WAITING)) {
     const labelAgeInDays = await issue.getLabelAgeInDays(STATUS_WAITING);
 
@@ -129,14 +137,21 @@ async function manageWaitingIssues(issue) {
 
     // If an issue has been in a waiting state for too long, close it as stale.
     if (labelAgeInDays >= CLOSE_AFTER_WAITING_DAYS) {
-      await issue.postComment(CLOSE_STALE_TEXT);
+      // PRs and issues get slightly different messages because reopening them
+      // works differently.
+      if (issue.isPR) {
+        await issue.postComment(CLOSE_STALE_PR_TEXT);
+      } else {
+        await issue.postComment(CLOSE_STALE_ISSUE_TEXT);
+      }
+
       await issue.close();
     }
   }
 }
 
-async function cleanUpIssueTags(issue) {
-  // If an issue with the waiting tag was closed, remove the tag.
+async function cleanUpIssueAndPRTags(issue) {
+  // If an issue or PR with the waiting tag was closed, remove the tag.
   if (issue.closed && issue.hasLabel(STATUS_WAITING)) {
     await issue.removeLabel(STATUS_WAITING);
   }
@@ -144,7 +159,7 @@ async function cleanUpIssueTags(issue) {
 
 async function pingQuestions(issue) {
   // If a question hasn't been responded to recently, ping it.
-  if (!issue.closed &&
+  if (!issue.isPR && !issue.closed &&
       issue.hasLabel(TYPE_QUESTION) &&
       !issue.hasLabel(STATUS_WAITING)) {
     // Important: only load comments if prior filters pass!
@@ -165,9 +180,9 @@ async function pingQuestions(issue) {
   }
 }
 
-async function maintainMilestones(issue, nextMilestone, backlog) {
+async function maintainIssueMilestones(issue, nextMilestone, backlog) {
   // Set or remove milestones based on type labels.
-  if (!issue.closed) {
+  if (!issue.isPR && !issue.closed) {
     if (issue.hasAnyLabel(LABELS_FOR_NEXT_MILESTONE)) {
       if (!issue.milestone) {
         // Some (low) priority flags will indicate that an issue should go to
@@ -191,35 +206,37 @@ async function maintainMilestones(issue, nextMilestone, backlog) {
 }
 
 
-const ALL_ISSUE_TASKS = [
+const ALL_TASKS = [
   reopenIssues,
-  archiveOldIssues,
-  unarchiveIssues,
-  manageWaitingIssues,
-  cleanUpIssueTags,
+  archiveOldIssuesAndPRs,
+  unarchiveIssuesAndPRs,
+  manageWaitingIssuesAndPRs,
+  cleanUpIssueAndPRTags,
   pingQuestions,
-  maintainMilestones,
+  maintainIssueMilestones,
 ];
 
-async function processIssues(issues, nextMilestone, backlog) {
+// Both issues and PRs are fetched by the issues API, and we now process both.
+// PRs have issue.isPR == true.
+async function processIssuesAndPRs(issues, nextMilestone, backlog) {
   let success = true;
 
   for (const issue of issues) {
     if (issue.hasLabel(FLAG_IGNORE)) {
-      core.info(`Ignoring issue #${issue.number}`);
+      core.info(`Ignoring ${issue.name}`);
       continue;
     }
 
-    core.info(`Processing issue #${issue.number}`);
+    core.info(`Processing ${issue.name}`);
 
-    for (const task of ALL_ISSUE_TASKS) {
+    for (const task of ALL_TASKS) {
       try {
         await task(issue, nextMilestone, backlog);
       } catch (error) {
         // Make this show up in the Actions UI without needing to search the
         // logs.
         core.error(
-            `Failed to process issue #${issue.number} in task ${task.name}: ` +
+            `Failed to process ${issue.name} in task ${task.name}: ` +
             `${error}\n${error.stack}`);
         success = false;
       }
@@ -246,7 +263,7 @@ async function main() {
     nextMilestone = backlog;
   }
 
-  const success = await processIssues(issues, nextMilestone, backlog);
+  const success = await processIssuesAndPRs(issues, nextMilestone, backlog);
   if (!success) {
     process.exit(1);
   }
@@ -258,7 +275,7 @@ if (require.main == module) {
   main();
 } else {
   module.exports = {
-    processIssues,
+    processIssuesAndPRs,
     TYPE_ACCESSIBILITY,
     TYPE_ANNOUNCEMENT,
     TYPE_BUG,

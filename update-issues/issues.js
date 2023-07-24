@@ -291,6 +291,8 @@ class Event extends GitHubObject {
   }
 }
 
+// Also could be a PR.  Both are returned by the GitHub issue API.
+// PRs have issue.isPR == true.
 class Issue extends GitHubObject {
   /** @param {!Object} obj */
   constructor(obj) {
@@ -307,6 +309,11 @@ class Issue extends GitHubObject {
     this.milestone = obj.milestone ? new Milestone(obj.milestone) : null;
     /** @type {boolean} */
     this.isPR = !!obj.pull_request;
+    /** @type {boolean} */
+    this.merged = obj.merged_at != null;
+    /** @type {string} */
+    this.name =
+        (this.isPR ? 'PR #' : 'issue #') + this.number;
   }
 
   /**
@@ -527,7 +534,7 @@ class Issue extends GitHubObject {
         octokit.rest.issues.listForRepo, Issue, {
           state: 'all',
         });
-    return all.filter(issue => !issue.isPR);
+    return all;
   }
 }
 

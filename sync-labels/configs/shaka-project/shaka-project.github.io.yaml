@@ -1,0 +1,40 @@
+# GitHub label config for shaka-project.github.io
+# These are the labels unique to the project.  See common.yaml for labels that
+# all projects share.
+
+
+- import: ../common/common.yaml
+
+
+# Project documentation
+# -----
+
+- name: "project: General"
+  # No alias; did not exist before
+  description: General documentation
+  color: f9d0c4
+
+- name: "project: Shaka Player"
+  # No alias; did not exist before
+  description: Documentation for Shaka Player
+  color: f9d0c4
+
+- name: "project: Shaka Packager"
+  # No alias; did not exist before
+  description: Documentation for Shaka Packager
+  color: f9d0c4
+
+- name: "project: Shaka Streamer"
+  # No alias; did not exist before
+  description: Documentation for Shaka Streamer
+  color: f9d0c4
+
+- name: "project: Shaka Lab"
+  # No alias; did not exist before
+  description: Documentation for Shaka Lab
+  color: f9d0c4
+
+- name: "project: Other"
+  # No alias; did not exist before
+  description: Documentation for other miscellaneous projects
+  color: f9d0c4

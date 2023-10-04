@@ -9,10 +9,13 @@
     "shaka-project/eme_logger",
     "shaka-project/generic-webdriver-server",
     "shaka-project/eme-encryption-scheme-polyfill",
+    "shaka-project/express-chocolatey-server",
     "shaka-project/shaka-player",
     "shaka-project/shaka-packager",
     "shaka-project/shaka-player-embedded",
-    "shaka-project/shaka-streamer"
+    "shaka-project/shaka-streamer",
+    "shaka-project/shaka-lab",
+    "shaka-project/shaka-project.github.io"
   ],
   "workflows": [
     "sync-labels/sync-labels.yaml",

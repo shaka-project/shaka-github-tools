@@ -3,3 +3,17 @@
 # all projects share.
 
 - import: ../common/common.yaml
+
+
+# CPU types
+# -----
+
+- name: "CPU: x64"
+  # No alias; did not exist before
+  description: Issues affecting x64 builds
+  color: f9d0c4
+
+- name: "CPU: arm64"
+  # No alias; did not exist before
+  description: Issues affecting arm64 builds
+  color: f9d0c4

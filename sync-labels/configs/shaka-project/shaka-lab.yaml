@@ -1,0 +1,50 @@
+# GitHub label config for shaka-lab
+# These are the labels unique to the project.  See common.yaml for labels that
+# all projects share.
+
+
+- import: ../common/common.yaml
+
+
+# Affected packages
+# -----
+
+- name: "package: shaka-lab-browsers"
+  # No alias; did not exist before
+  description: Issues affecting shaka-lab-browsers
+  color: f9d0c4
+
+- name: "package: shaka-lab-certs"
+  # No alias; did not exist before
+  description: Issues affecting shaka-lab-certs
+  color: f9d0c4
+
+- name: "package: shaka-lab-gateway"
+  # No alias; did not exist before
+  description: Issues affecting shaka-lab-gateway
+  color: f9d0c4
+
+- name: "package: shaka-lab-gateway-client"
+  # No alias; did not exist before
+  description: Issues affecting shaka-lab-gateway-client
+  color: f9d0c4
+
+- name: "package: shaka-lab-github-runner"
+  # No alias; did not exist before
+  description: Issues affecting shaka-lab-github-runner
+  color: f9d0c4
+
+- name: "package: shaka-lab-hub"
+  # No alias; did not exist before
+  description: Issues affecting shaka-lab-hub
+  color: f9d0c4
+
+- name: "package: shaka-lab-node"
+  # No alias; did not exist before
+  description: Issues affecting shaka-lab-node
+  color: f9d0c4
+
+- name: "package: shaka-lab-recommended-settings"
+  # No alias; did not exist before
+  description: Issues affecting shaka-lab-recommended-settings
+  color: f9d0c4

@@ -76,6 +76,11 @@
   description: The issue involves our automated tests (generally; otherwise use a more specific component)
   color: c2e0c6
 
+- name: "component: transmuxer"
+  # No alias; did not exist before
+  description: The issue involves our built-in transmuxer
+  color: c2e0c6
+
 - name: "component: TTML"
   alias: TTML
   description: The issue involves TTML subtitles specifically

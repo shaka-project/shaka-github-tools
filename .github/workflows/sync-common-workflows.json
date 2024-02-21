@@ -12,7 +12,6 @@
     "shaka-project/express-chocolatey-server",
     "shaka-project/shaka-player",
     "shaka-project/shaka-packager",
-    "shaka-project/shaka-player-embedded",
     "shaka-project/shaka-streamer",
     "shaka-project/shaka-lab",
     "shaka-project/shaka-project.github.io"

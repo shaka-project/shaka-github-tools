@@ -4,3 +4,22 @@
 
 
 - import: ../common/common.yaml
+
+
+# Deployment environments
+# -----
+
+- name: "environment: App Engine"
+  # No alias; did not exist before
+  description: An issue with App Engine deployment
+  color: c2e0c6
+
+- name: "environment: standalone"
+  # No alias; did not exist before
+  description: An issue with standalone deployment
+  color: c2e0c6
+
+- name: "environment: other"
+  # No alias; did not exist before
+  description: An issue with some other type of deployment
+  color: c2e0c6

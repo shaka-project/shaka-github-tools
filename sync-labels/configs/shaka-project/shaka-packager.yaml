@@ -30,6 +30,36 @@
   description: The issue involves HTTP upload
   color: C2E0C6
 
+- name: "component: Common DRM System"
+  # No alias; did not exist before
+  description: 'The issue involves the "Common" DRM System'
+  color: C2E0C6
+
+- name: "component: Widevine"
+  # No alias; did not exist before
+  description: The issue involves Widevine DRM
+  color: C2E0C6
+
+- name: "component: PlayReady"
+  # No alias; did not exist before
+  description: The issue involves PlayReady DRM
+  color: C2E0C6
+
+- name: "component: FairPlay"
+  # No alias; did not exist before
+  description: The issue involves FairPlay DRM
+  color: C2E0C6
+
+- name: "component: Marlin"
+  # No alias; did not exist before
+  description: The issue involves Marlin DRM
+  color: C2E0C6
+
+- name: "component: raw key encryption"
+  # No alias; did not exist before
+  description: The issue involves raw key encryption settings
+  color: C2E0C6
+
 
 # Issue flags
 # -----

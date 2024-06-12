@@ -10,7 +10,7 @@ To use this in a step, write something like:
         # Will run on success or failure, but not if the workflow is cancelled
         # or if we were asked to ignore the test status.
         if: ${{ (success() || failure()) && inputs.skip_commit_status == false }}
-        uses: shaka-project/shaka-github-tools/set-commit-status
+        uses: shaka-project/shaka-github-tools/set-commit-status@main
         with:
           context: Example Check / ${{ matrix.some_parameter }}
           job_name: Optional Job Name for Deep Linking from Status

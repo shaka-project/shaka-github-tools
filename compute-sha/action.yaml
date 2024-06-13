@@ -1,0 +1,50 @@
+# Migrated from shaka-project/shaka-player/.github/workflows/
+#
+# See README.md for usage
+
+name: Compute sha
+
+description: |
+  A reusable action that computes a specific SHA from a PR number or symbolic
+  reference.  This is used to pin a hash for workflows with non-PR triggers
+  (such as manually-triggered workflows), because the meaning of a symbolic
+  reference can change between jobs or steps.
+
+inputs:
+  ref:
+    description: A git symbolic reference.  For a PR-based reference, use something like "refs/pull/PR_NUMBER/head".  Overridden by "sha".  If neither is given, we fail.
+    required: false
+  sha:
+    description: A SHA for the convenience of nested workflows.  Will override "ref" and will be output directly.  The outer workflow's computed SHA can be passed through here to keep the two workflows in sync without the complexity of skipping a job.
+    required: false
+
+outputs:
+  SHA:
+    description: The computed SHA for the input PR or symbolic reference.
+    value: ${{ steps.compute.outputs.SHA }}
+
+runs:
+  using: composite
+  steps:
+    - name: Compute sha
+      id: compute
+      shell: bash
+      run: |
+        if [[ "${{ inputs.sha }}" != "" ]]; then
+          # We have been given a specific SHA as input.
+          echo "Direct SHA: ${{ inputs.sha }}"
+          SHA="${{ inputs.sha }}"
+        elif [[ "${{ inputs.ref }}" != "" ]]; then
+          echo "Symbolic reference: ${{ inputs.ref }}"
+          # Compute a specific SHA now by fetching the symbolic ref from the
+          # repo.  --exit-code means "fail if not found".
+          SHA=$(git ls-remote --exit-code https://github.com/${{ github.repository }} "${{ inputs.ref }}" | cut -f 1)
+        else
+          # No input?  Fail!
+          echo "No input (ref or sha) given!"
+          exit 1
+        fi
+        echo "SHA: $SHA"
+
+        # Output the ref for other jobs to consume.
+        echo "SHA=$SHA" >> $GITHUB_OUTPUT

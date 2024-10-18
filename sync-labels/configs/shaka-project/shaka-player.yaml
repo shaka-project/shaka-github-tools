@@ -96,6 +96,16 @@
   description: The issue involves WebVTT subtitles specifically
   color: c2e0c6
 
+- name: "component: CMCD"
+  # No alias; did not exist before
+  description: The issue involves CMCD specifically
+  color: c2e0c6
+
+- name: "component: CMSD"
+  # No alias; did not exist before
+  description: The issue involves CMSD specifically
+  color: c2e0c6
+
 
 # Issue flags
 # -----
@@ -127,6 +137,11 @@
 - name: "platform: iOS"
   # No alias; did not exist before
   description: Issues affecting iOS
+  color: f9d0c4
+
+- name: "component: AirPlay"
+  # No alias; did not exist before
+  description: Issues affecting AirPlay
   color: f9d0c4
 
 - name: "platform: WebOS"

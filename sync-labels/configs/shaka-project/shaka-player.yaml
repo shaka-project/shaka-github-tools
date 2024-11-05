@@ -139,7 +139,12 @@
   description: Issues affecting iOS
   color: f9d0c4
 
-- name: "component: AirPlay"
+- name: "platform: VisionOS"
+  # No alias; did not exist before
+  description: Issues affecting VisionOS
+  color: f9d0c4
+
+- name: "platform: AirPlay"
   # No alias; did not exist before
   description: Issues affecting AirPlay
   color: f9d0c4

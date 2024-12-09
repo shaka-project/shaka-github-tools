@@ -6,6 +6,11 @@ from workflows with non-PR triggers (such as manually-triggered workflows).
 To use this in a step, write something like:
 
 ```yaml
+    permissions:
+      # "Write" to statuses to update commit status
+      statuses: write
+
+    steps:
       - name: Report final commit status
         # Will run on success or failure, but not if the workflow is cancelled
         # or if we were asked to ignore the test status.
@@ -17,3 +22,8 @@ To use this in a step, write something like:
           state: ${{ job.status }}
           token: ${{ secrets.GITHUB_TOKEN }}
 ```
+
+## Permissions
+
+A GitHub-generated token requires "write" permission to "statuses" to be able to
+set the commit status.

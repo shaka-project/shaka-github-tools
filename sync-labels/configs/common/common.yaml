@@ -61,6 +61,11 @@
   description: A question from the community
   color: cc317c
 
+- name: "type: vulnerability"
+  # No alias; did not exist before
+  description: A security issue with the project, the CI, or the repo
+  color: fc2929
+
 
 # Issue status
 # -----

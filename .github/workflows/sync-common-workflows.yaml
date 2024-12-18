@@ -45,6 +45,8 @@ jobs:
       - uses: actions/checkout@v4
         with:
           path: workflows
+          persist-credentials: false
+
       - name: Sync Workflows
         run: |
           git config --global user.email "shaka-bot@users.noreply.github.com"

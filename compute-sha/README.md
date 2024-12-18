@@ -30,6 +30,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           ref: ${{ needs.compute-sha.outputs.SHA }}
+          persist-credentials: false
 
       # ...
 ```

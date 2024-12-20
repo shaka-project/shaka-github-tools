@@ -1,0 +1,174 @@
+name: Sync Policy Documents
+
+# Sync common policy documents across repos.  If a document changes here,
+# this will create a PR in each of our other repos to update their copies of
+# these documents.
+#
+# The token used by this workflow (SHAKA_BOT_PR_TOKEN) is associated with the
+# "shaka-bot" account.
+
+on:
+  workflow_dispatch:
+    # Allows for manual triggering.
+    inputs:
+      repos:
+        type: string
+        description: A space-separated list of repos to push to.
+  push:
+    branches:
+      - main
+    paths:
+      - .github/workflows/sync-policies.json
+      - policies/
+
+env:
+  CONFIG: .github/workflows/sync-policies.json
+  PR_BRANCH: sync-policies
+
+jobs:
+  sync-policies:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          path: tools-repo
+          persist-credentials: false
+
+      - name: Sync Policies
+        run: |
+          git config --global user.email "shaka-bot@users.noreply.github.com"
+          git config --global user.name "Shaka Bot"
+          echo "${{ secrets.SHAKA_BOT_PR_TOKEN }}" | gh auth login --with-token
+
+          REPO_NO_BRANCHES_LIST=$(cat tools-repo/$CONFIG | jq -r '."repos-with-no-branches"[]')
+          REPO_WITH_BRANCHES_LIST=$(cat tools-repo/$CONFIG | jq -r '."repos-with-release-branches"[]')
+
+          POLICY_DOC_LIST=$(cd tools-repo/policies; ls)
+
+          # The security doc contains variants of certain sections.  Create two
+          # versions of the doc in memory now, with only one variant of these
+          # sections included.
+          SECURITY_MD_NO_BRANCHES=""
+          SECURITY_MD_WITH_BRANCHES=""
+          COMMON=1
+          BRANCHES=0
+          NEWLINE=$'\n'
+          # The end of this loop has an input redirection to read SECURITY.md.
+          # This structure is important because it does not create a subshell.
+          # A subshell would keep us from changing the variables on the outside
+          # of the loop.  Using IFS= here tells bash to preserve all whitespace
+          # in the line, and not to treat the input as delimited tokens.
+          while IFS= read line; do
+            # This is the start of a section only included for repos with branches.
+            if echo "$line" | grep -q '^## .* (with-branches)'; then
+              COMMON=0
+              BRANCHES=1
+              line=$(echo "$line" | sed -e 's/ (with-branches)//')
+            # This is the start of a section only included for repos without branches.
+            elif echo "$line" | grep -q '^## .* (no-branches)'; then
+              COMMON=0
+              BRANCHES=0
+              line=$(echo "$line" | sed -e 's/ (no-branches)//')
+            # This is the start of a section common to every repo.
+            elif echo "$line" | grep -q '^## '; then
+              COMMON=1
+            fi
+
+            # Add the current line to one doc, or to both, as appropriate,
+            # based on the state from the parser above.
+            if [[ $COMMON == 1 ]]; then
+              SECURITY_MD_WITH_BRANCHES="${SECURITY_MD_WITH_BRANCHES}${line}${NEWLINE}"
+              SECURITY_MD_NO_BRANCHES="${SECURITY_MD_NO_BRANCHES}${line}${NEWLINE}"
+            elif [[ $BRANCHES == 1 ]]; then
+              SECURITY_MD_WITH_BRANCHES="${SECURITY_MD_WITH_BRANCHES}${line}${NEWLINE}"
+            else
+              SECURITY_MD_NO_BRANCHES="${SECURITY_MD_NO_BRANCHES}${line}${NEWLINE}"
+            fi
+          done < tools-repo/policies/SECURITY.md
+
+          for REPO in $REPO_NO_BRANCHES_LIST $REPO_WITH_BRANCHES_LIST; do
+            if echo "$REPO_WITH_BRANCHES_LIST" | grep -q "^$REPO\$"; then
+              WITH_BRANCHES=1
+            else
+              WITH_BRANCHES=0
+            fi
+            echo ""
+            echo "Working on $REPO, WITH_BRANCHES=$WITH_BRANCHES..."
+
+            # Fork each repo under shaka-bot if we haven't yet.
+            gh repo fork "$REPO" --clone=false
+            # Some messages from "gh repo fork" don't end in a newline.
+            # Add a newline to clean up the logs.
+            echo ""
+
+            # Pause between forking and cloning.  This seems to fix errors that
+            # occur when trying to clone in one step or trying to fork and then
+            # immediately clone.
+            sleep 5
+
+            # Clone each forked repo.
+            FORK="shaka-bot/$(basename $REPO)"
+            git clone "https://${{ secrets.SHAKA_BOT_PR_TOKEN }}@github.com/$FORK"
+
+            # Use a subshell to change directories.  The working directory will
+            # revert when the subshell ends, so each loop starts from the same
+            # place.
+            (
+              cd $(basename "$REPO")
+
+              # Add the upstream remote and update it.
+              git remote add upstream https://github.com/$REPO
+              git fetch upstream
+
+              # Create a local branch for a potential PR.  Start at main.
+              git checkout -b "$PR_BRANCH" upstream/main
+
+              # Update every doc, creating those that don't already exist.
+              for DOC in $POLICY_DOC_LIST; do
+                if [[ "$DOC" == "SECURITY.md" ]]; then
+                  # SECURITY.md is special, with a customized version for
+                  # different categories of repo.
+                  if [[ $WITH_BRANCHES == 1 ]]; then
+                    echo "$SECURITY_MD_WITH_BRANCHES" > SECURITY.md
+                  else
+                    echo "$SECURITY_MD_NO_BRANCHES" > SECURITY.md
+                  fi
+                else
+                  # All other docs are simple.  Just copy them.
+                  cp "../tools-repo/policies/$DOC" .
+                fi
+
+                git add "$DOC"
+                echo "Syncing $DOC in $REPO"
+              done
+
+              # If anything has changed, generate a commit in a PR branch.
+              if ! git diff --cached --quiet; then
+                echo "chore: Sync policy documents" > .sync-pr-title
+
+                echo "This is an automated sync of policy documents for this organization." > .sync-pr-body
+                echo "The upstream source is:" >> .sync-pr-body
+                echo "https://github.com/$GITHUB_REPOSITORY/commit/$GITHUB_SHA" >> .sync-pr-body
+
+                (cat .sync-pr-title; echo; cat .sync-pr-body) > .sync-pr-message
+                git commit -F .sync-pr-message
+                git push -f origin "HEAD:$PR_BRANCH"
+                echo "Pushed to branch in $REPO"
+
+                # If there's not an open PR from that branch, create one.
+                PR_URL=$(gh pr list -H "$PR_BRANCH" --json url | jq -r first.url)
+                if [[ "$PR_URL" == "null" ]]; then
+                  gh pr create \
+                      --title "$(cat .sync-pr-title)" \
+                      --body-file .sync-pr-body \
+                      --head shaka-bot:$PR_BRANCH
+                  echo "Created PR in $REPO"
+                else
+                  gh pr edit "$PR_URL" --body-file .sync-pr-body
+                  echo "Updated PR body in $REPO"
+                fi
+              else
+                echo "No changes in $REPO"
+              fi
+            )
+          done

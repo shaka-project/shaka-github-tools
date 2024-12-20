@@ -1,0 +1,24 @@
+{
+  "comment1": "These repos release from main, and only the latest release is supported.",
+  "repos-with-no-branches": [
+    "shaka-project/eme-encryption-scheme-polyfill",
+    "shaka-project/eme_logger",
+    "shaka-project/express-chocolatey-server",
+    "shaka-project/generic-webdriver-server",
+    "shaka-project/karma-local-wd-launcher",
+    "shaka-project/shaka-github-tools",
+    "shaka-project/shaka-lab",
+    "shaka-project/shaka-packager",
+    "shaka-project/shaka-player-history",
+    "shaka-project/shaka-project.github.io",
+    "shaka-project/shaka-streamer",
+    "shaka-project/static-ffmpeg-binaries",
+    "shaka-project/trace-anything",
+    "shaka-project/triage-party-config",
+    "shaka-project/webdriver-installer"
+  ],
+  "comment2": "These repos have certain maintained branches, and get a specialized SECURITY.md with reference to branch maintenance policies.",
+  "repos-with-release-branches": [
+    "shaka-project/shaka-player"
+  ]
+}

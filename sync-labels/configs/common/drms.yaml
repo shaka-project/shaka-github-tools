@@ -21,6 +21,11 @@
   description: The issue involves the FairPlay DRM
   color: "c2e0c6"
 
+- name: "component: WisePlay"
+  # No alias; did not exist before
+  description: The issue involves the WisePlay DRM
+  color: "c2e0c6"
+
 - name: "component: ClearKey"
   # No alias; did not exist before
   description: The issue involves the ClearKey DRM

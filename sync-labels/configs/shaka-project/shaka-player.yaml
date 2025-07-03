@@ -71,7 +71,7 @@
   description: The issue involves the offline storage system of Shaka Player
   color: C2E0C6
 
-- name: "component: straming"
+- name: "component: streaming"
   # No alias; did not exist before
   description: The issue involves the streaming engine or media source engine implementation
   color: C2E0C6

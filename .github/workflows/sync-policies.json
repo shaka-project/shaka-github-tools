@@ -1,7 +1,6 @@
 {
   "comment1": "These repos release from main, and only the latest release is supported.",
   "repos-with-no-branches": [
-    "shaka-project/eme-encryption-scheme-polyfill",
     "shaka-project/eme_logger",
     "shaka-project/express-chocolatey-server",
     "shaka-project/generic-webdriver-server",

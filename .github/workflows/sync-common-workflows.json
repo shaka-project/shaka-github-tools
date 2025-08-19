@@ -8,7 +8,6 @@
     "shaka-project/trace-anything",
     "shaka-project/eme_logger",
     "shaka-project/generic-webdriver-server",
-    "shaka-project/eme-encryption-scheme-polyfill",
     "shaka-project/express-chocolatey-server",
     "shaka-project/shaka-player",
     "shaka-project/shaka-packager",

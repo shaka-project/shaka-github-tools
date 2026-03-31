@@ -19,7 +19,7 @@ on:
       - main
     paths:
       - .github/workflows/sync-policies.json
-      - policies/
+      - policies/**
 
 env:
   CONFIG: .github/workflows/sync-policies.json

@@ -2,7 +2,6 @@
 
 Updates GitHub issues on a timer.
 
- - Set default milestones based on issue type
  - Maintain status labels
  - Ping stale questions
  - Close stale questions if ping is ignored

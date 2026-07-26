@@ -9,52 +9,15 @@
  */
 
 const core = require('@actions/core');
-const { Issue, Milestone } = require('./issues.js');
+const { Issue } = require('./issues.js');
 
-const TYPE_ACCESSIBILITY = 'type: accessibility';
-const TYPE_ANNOUNCEMENT = 'type: announcement';
-const TYPE_BUG = 'type: bug';
-const TYPE_CI = 'type: CI';
-const TYPE_CODE_HEALTH = 'type: code health';
-const TYPE_DOCS = 'type: docs';
-const TYPE_ENHANCEMENT = 'type: enhancement';
-const TYPE_PERFORMANCE = 'type: performance';
-const TYPE_PROCESS = 'type: process';
-const TYPE_QUESTION = 'type: question';
-
-const PRIORITY_P0 = 'priority: P0';
-const PRIORITY_P1 = 'priority: P1';
-const PRIORITY_P2 = 'priority: P2';
-const PRIORITY_P3 = 'priority: P3';
-const PRIORITY_P4 = 'priority: P4';
+// The native issue type (the GitHub issue "type" field) for questions.
+const TYPE_QUESTION = 'Question';
 
 const STATUS_ARCHIVED = 'status: archived';
 const STATUS_WAITING = 'status: waiting on response';
 
 const FLAG_IGNORE = 'flag: bot ignore';
-
-// Issues of these types default to the next milestone.  See also
-// BACKLOG_PRIORITIES below, which can override the type.
-const LABELS_FOR_NEXT_MILESTONE = [
-  TYPE_ACCESSIBILITY,
-  TYPE_BUG,
-  TYPE_DOCS,
-];
-
-// Issues of these types default to the backlog.
-const LABELS_FOR_BACKLOG = [
-  TYPE_CI,
-  TYPE_CODE_HEALTH,
-  TYPE_ENHANCEMENT,
-  TYPE_PERFORMANCE,
-];
-
-// An issue with one of these priorities will default to the backlog, even if
-// it has one of the types in LABELS_FOR_NEXT_MILESTONE.
-const BACKLOG_PRIORITIES = [
-  PRIORITY_P3,
-  PRIORITY_P4,
-];
 
 const PING_QUESTION_TEXT =
     'Does this answer all your questions? ' +
@@ -160,7 +123,7 @@ async function cleanUpIssueAndPRTags(issue) {
 async function pingQuestions(issue) {
   // If a question hasn't been responded to recently, ping it.
   if (!issue.isPR && !issue.closed &&
-      issue.hasLabel(TYPE_QUESTION) &&
+      issue.type == TYPE_QUESTION &&
       !issue.hasLabel(STATUS_WAITING)) {
     // Important: only load comments if prior filters pass!
     // If we loaded them on every issue, we could exceed our query quota!
@@ -180,32 +143,6 @@ async function pingQuestions(issue) {
   }
 }
 
-async function maintainIssueMilestones(issue, nextMilestone, backlog) {
-  // Set or remove milestones based on type labels.
-  if (!issue.isPR && !issue.closed) {
-    if (issue.hasAnyLabel(LABELS_FOR_NEXT_MILESTONE)) {
-      if (!issue.milestone) {
-        // Some (low) priority flags will indicate that an issue should go to
-        // the backlog, in spite of its type.
-        if (issue.hasAnyLabel(BACKLOG_PRIORITIES)) {
-          await issue.setMilestone(backlog);
-        } else {
-          await issue.setMilestone(nextMilestone);
-        }
-      }
-    } else if (issue.hasAnyLabel(LABELS_FOR_BACKLOG)) {
-      if (!issue.milestone) {
-        await issue.setMilestone(backlog);
-      }
-    } else {
-      if (issue.milestone) {
-        await issue.removeMilestone();
-      }
-    }
-  }
-}
-
-
 const ALL_TASKS = [
   reopenIssues,
   archiveOldIssuesAndPRs,
@@ -213,12 +150,11 @@ const ALL_TASKS = [
   manageWaitingIssuesAndPRs,
   cleanUpIssueAndPRTags,
   pingQuestions,
-  maintainIssueMilestones,
 ];
 
 // Both issues and PRs are fetched by the issues API, and we now process both.
 // PRs have issue.isPR == true.
-async function processIssuesAndPRs(issues, nextMilestone, backlog) {
+async function processIssuesAndPRs(issues) {
   let success = true;
 
   for (const issue of issues) {
@@ -231,7 +167,7 @@ async function processIssuesAndPRs(issues, nextMilestone, backlog) {
 
     for (const task of ALL_TASKS) {
       try {
-        await task(issue, nextMilestone, backlog);
+        await task(issue);
       } catch (error) {
         // Make this show up in the Actions UI without needing to search the
         // logs.
@@ -247,23 +183,9 @@ async function processIssuesAndPRs(issues, nextMilestone, backlog) {
 }
 
 async function main() {
-  const milestones = await Milestone.getAll();
   const issues = await Issue.getAll();
 
-  const backlog = milestones.find(m => m.isBacklog());
-  if (!backlog) {
-    core.error('No backlog milestone found!');
-    process.exit(1);
-  }
-
-  milestones.sort(Milestone.compare);
-  let nextMilestone = milestones[0];
-  if (nextMilestone.version == null) {
-    core.warning('No version milestone found!  Using backlog instead.');
-    nextMilestone = backlog;
-  }
-
-  const success = await processIssuesAndPRs(issues, nextMilestone, backlog);
+  const success = await processIssuesAndPRs(issues);
   if (!success) {
     process.exit(1);
   }
@@ -276,19 +198,7 @@ if (require.main == module) {
 } else {
   module.exports = {
     processIssuesAndPRs,
-    TYPE_ACCESSIBILITY,
-    TYPE_ANNOUNCEMENT,
-    TYPE_BUG,
-    TYPE_CODE_HEALTH,
-    TYPE_DOCS,
-    TYPE_ENHANCEMENT,
-    TYPE_PROCESS,
     TYPE_QUESTION,
-    PRIORITY_P0,
-    PRIORITY_P1,
-    PRIORITY_P2,
-    PRIORITY_P3,
-    PRIORITY_P4,
     STATUS_ARCHIVED,
     STATUS_WAITING,
     FLAG_IGNORE,

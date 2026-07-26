@@ -26,75 +26,6 @@ const TEAM_ASSOCIATIONS = [
 const ACTIONS_BOT = 'github-actions[bot]';
 
 /**
- * Parse a version string into an array of numbers with an optional string tag
- * at the end.  A string tag will be preceded by a negative one (-1) so that
- * any tagged version (like -beta or -rc1) will be sorted before the final
- * release version.
- *
- * @param {string} versionString
- * @return {Array<number|string>}
- */
-function parseVersion(versionString) {
-  const matches = /^v?([0-9]+(?:\.[0-9]+)*)(?:-(.*))?$/.exec(versionString);
-  if (!matches) {
-    return null;
-  }
-
-  // If there is a tag, append it as a string after a negative one. This will
-  // ensure that versions like "-beta" sort above their production
-  // counterparts.
-  const version = matches[1].split('.').map(x => parseInt(x));
-  if (matches[2]) {
-    version.push(-1);
-    version.push(matches[2]);
-  }
-
-  return version;
-}
-
-/**
- * Compare two version arrays.  Can be used as a callback to
- * Array.prototype.sort to sort by version numbers (ascending).
- *
- * The last item in a version array may be a string (a tag like "beta"), but
- * the rest are numbers.  See notes in parseVersion above for details on tags.
- *
- * @param {Array<number|string>} a
- * @param {Array<number|string>} b
- * @return {number}
- */
-function compareVersions(a, b) {
-  // If a milestone's version can't be parsed, it will be null.  Push those to
-  // the end of any sorted list.
-  if (!a && !b) {
-    return 0;
-  } else if (!a) {
-    return 1;
-  } else if (!b) {
-    return -1;
-  }
-
-  for (let i = 0; i < Math.min(a.length, b.length); ++i) {
-    if (a[i] < b[i]) {
-      return -1;
-    } else if (a[i] > b[i]) {
-      return 1;
-    }
-    // If equal, keep going through the array.
-  }
-
-  // If one has a tag that the other does not, the one with the tag (the longer
-  // one) comes first.
-  if (a.length > b.length) {
-    return -1;
-  } else if (a.length < b.length) {
-    return 1;
-  } else {
-    return 0;
-  }
-}
-
-/**
  * Compare two Numbers.  Can be used as a callback to Array.prototype.sort to
  * sort by number (ascending).
  *
@@ -174,42 +105,6 @@ class GitHubObject {
     const query = { owner, repo, ...parameters };
     return (await octokit.paginate(listMethod, query))
         .map(obj => new SubClass(obj));
-  }
-}
-
-class Milestone extends GitHubObject {
-  /** @param {!Object} obj */
-  constructor(obj) {
-    super(obj);
-    /** @type {string} */
-    this.title = obj.title;
-    /** @type {Array<number|string>} */
-    this.version = parseVersion(obj.title);
-    /** @type {boolean} */
-    this.closed = obj.state == 'closed';
-  }
-
-  /** @return {boolean} */
-  isBacklog() {
-    return this.title.toLowerCase() == 'backlog';
-  }
-
-  /** @return {!Promise<!Array<!Milestone>>} */
-  static async getAll() {
-    return GitHubObject.getAll(
-        octokit.rest.issues.listMilestones, Milestone, {});
-  }
-
-  /**
-   * Compare two Milestones.  Can be used as a callback to Array.prototype.sort
-   * to sort by version numbers (ascending).
-   *
-   * @param {!Milestone} a
-   * @param {!Milestone} b
-   * @return {number}
-   */
-  static compare(a, b) {
-    return compareVersions(a.version, b.version);
   }
 }
 
@@ -301,12 +196,16 @@ class Issue extends GitHubObject {
     this.author = obj.user.login;
     /** @type {!Array<string>} */
     this.labels = obj.labels.map(l => l.name);
+    /**
+     * The native issue type (e.g. "Bug"), or null if none is set.  Provided by
+     * the REST issues API.
+     * @type {?string}
+     */
+    this.type = obj.type ? obj.type.name : null;
     /** @type {boolean} */
     this.closed = obj.state == 'closed';
     /** @type {boolean} */
     this.locked = obj.locked;
-    /** @type {Milestone} */
-    this.milestone = obj.milestone ? new Milestone(obj.milestone) : null;
     /** @type {boolean} */
     this.isPR = !!obj.pull_request;
     /** @type {boolean} */
@@ -452,44 +351,6 @@ class Issue extends GitHubObject {
   }
 
   /**
-   * @param {!Milestone} milestone
-   * @return {!Promise}
-   */
-  async setMilestone(milestone) {
-    if (this.milestone && this.milestone.number == milestone.number) {
-      return;
-    }
-
-    core.notice(
-        `Adding issue #${this.number} to milestone ${milestone.title}`);
-    await octokit.rest.issues.update({
-      owner,
-      repo,
-      issue_number: this.number,
-      milestone: milestone.number,
-    });
-    this.milestone = milestone;
-  }
-
-  /** @return {!Promise} */
-  async removeMilestone() {
-    if (!this.milestone) {
-      return;
-    }
-
-    core.notice(
-        `Removing issue #${this.number} ` +
-        `from milestone ${this.milestone.title}`);
-    await octokit.rest.issues.update({
-      owner,
-      repo,
-      issue_number: this.number,
-      milestone: null,
-    });
-    this.milestone = null;
-  }
-
-  /**
    * @param {string} body
    * @return {!Promise}
    */
@@ -540,5 +401,4 @@ class Issue extends GitHubObject {
 
 module.exports = {
   Issue,
-  Milestone,
 };

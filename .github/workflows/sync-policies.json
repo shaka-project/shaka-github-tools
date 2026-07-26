@@ -13,7 +13,6 @@
     "shaka-project/shaka-streamer",
     "shaka-project/static-ffmpeg-binaries",
     "shaka-project/trace-anything",
-    "shaka-project/triage-party-config",
     "shaka-project/webdriver-installer"
   ],
   "comment2": "These repos have certain maintained branches, and get a specialized SECURITY.md with reference to branch maintenance policies.",

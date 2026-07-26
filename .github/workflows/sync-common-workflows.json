@@ -2,7 +2,6 @@
   "repos": [
     "shaka-project/karma-local-wd-launcher",
     "shaka-project/webdriver-installer",
-    "shaka-project/triage-party-config",
     "shaka-project/static-ffmpeg-binaries",
     "shaka-project/shaka-github-tools",
     "shaka-project/trace-anything",

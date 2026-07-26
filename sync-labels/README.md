@@ -18,41 +18,42 @@ The `alias` or `aliases` field will indicate old names that should be migrated
 to the new one listed in the `name` field:
 
 ```yaml
-- name: "type: announcement"
+- name: "flag: good first issue"
   aliases:
-    - type:announcement
-    - announcement
-    - survey
-  description: An announcement from the team; generally pinned to the top
-  color: C2E0C6
+    - easy?
+    - good first issue
+  description: This might be a relatively easy issue; good for new contributors
+  color: fef2c0
 
-- name: "type: bug"
-  alias: bug
-  description: Something isn't working correctly
-  color: fc2929
+- name: "status: archived"
+  alias: archived
+  description: Archived and locked; will not be updated
+  color: ededed
 ```
 
 
 ## Label Structure
 
 Every label will consist of two parts: a heading and a value, separated by a
-colon and a space.  For example, "bug" is a type of issue, and will be labeled
-with "type: bug".
+colon and a space.  For example, "archived" is a status, and will be labeled
+with "status: archived".
 
 
 ## Label Headings
 
 Some label headings will be common across projects, while some projects will
 have unique headings based on the project.  For example, every project will have
-a "type" heading, but only JavaScript projects will have a "browser" heading.
+a "status" heading, but only JavaScript projects will have a "browser" heading.
 
- * type: the type of issue, such as "bug" or "enhancement"
  * status: the issue's status, such as "working as intended" or "duplicate"
  * component: what project component the issue deals with (always
    project-specific)
  * flag: flags that can be attached to an issue, such as "seeking PR", "easy" or
    "bot ignore"
- * priority: P0 - P4, as defined by Google for its internal bug tracker
  * platform: what platforms are affected
  * browser: what browsers are affected (web-based projects only, see
    `common/browsers.yaml`)
+
+The issue **type** (Bug, Feature, Docs, CI, Question, etc.) and **priority**
+(Urgent, High, Medium, Low) were formerly labels but are now GitHub-native
+issue fields, not managed here.

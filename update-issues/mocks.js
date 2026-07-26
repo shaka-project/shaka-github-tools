@@ -38,19 +38,6 @@ class MockGitHubObject {
   }
 }
 
-class MockMilestone extends MockGitHubObject {
-  constructor(params) {
-    const defaults = {
-      title: 'MockMilestone',
-      version: null,
-      closed: false,
-      isBacklog: () => false,
-    };
-
-    super(defaults, params);
-  }
-}
-
 class MockComment extends MockGitHubObject {
   constructor(params) {
     const defaults = {
@@ -70,9 +57,9 @@ class MockIssue extends MockGitHubObject {
       number: nextIssueNumber++,
       author: 'SomeUser',
       labels: [],
+      type: null,
       closed: false,
       locked: false,
-      milestone: null,
       comments: [],
       isPR: false,
       merged: false,
@@ -107,16 +94,6 @@ class MockIssue extends MockGitHubObject {
       console.log('Reopening');
       this.closed = false;
     });
-    this.setMilestone =
-        jasmine.createSpy('setMilestone').and.callFake((milestone) => {
-          console.log(`Setting milestone to "${milestone.title}"`);
-          this.milestone = milestone;
-        });
-    this.removeMilestone =
-        jasmine.createSpy('removeMilestone').and.callFake(() => {
-          console.log('Removing milestone.');
-          this.milestone = null;
-        });
     this.postComment = jasmine.createSpy('postComment').and.callFake((body) => {
       console.log(`Posting comment: ${body}`);
       this.comments.push(new MockComment({body}));
@@ -136,7 +113,6 @@ class MockIssue extends MockGitHubObject {
 }
 
 module.exports = {
-  MockMilestone,
   MockComment,
   MockIssue,
 };

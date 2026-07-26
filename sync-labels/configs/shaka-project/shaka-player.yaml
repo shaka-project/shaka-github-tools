@@ -9,15 +9,6 @@
 - import: ../common/media-consumption.yaml
 
 
-# Issue types
-# -----
-
-- name: "type: accessibility"
-  alias: comp:accessibility
-  description: An accessibility issue
-  color: C2E0C6
-
-
 # Affected components
 # -----
 

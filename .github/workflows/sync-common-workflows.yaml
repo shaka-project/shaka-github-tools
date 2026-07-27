@@ -42,7 +42,7 @@ jobs:
   sync-workflows:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           path: workflows
           persist-credentials: false

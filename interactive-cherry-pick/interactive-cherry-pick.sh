@@ -4,15 +4,29 @@
 # Copyright 2022 Google LLC
 # SPDX-License-Identifier: Apache-2.0
 
-limit_tag="$1"
+usage="Usage: $0 [--skip-feat] <LIMIT_TAG> [<UPSTREAM_REMOTE> [<MAIN_BRANCH>]]"
+
+# Separate flags (accepted in any position) from positional arguments.
+skip_feat=false
+positional=()
+for arg in "$@"; do
+  case "$arg" in
+    --skip-feat) skip_feat=true ;;
+    -h|--help) echo "$usage"; exit 0 ;;
+    -*) echo "Unknown option: $arg"; echo "$usage"; exit 1 ;;
+    *) positional+=("$arg") ;;
+  esac
+done
+
+limit_tag="${positional[0]}"
 
 if [[ "$limit_tag" == "" ]]; then
-  echo "Usage: $0 <LIMIT_TAG> [<UPSTREAM_REMOTE> [<MAIN_BRANCH>]]"
+  echo "$usage"
   exit 1
 fi
 
-upstream_remote="${2:-upstream}"
-main_branch="$upstream_remote/${3:-main}"
+upstream_remote="${positional[1]:-upstream}"
+main_branch="$upstream_remote/${positional[2]:-main}"
 local_target_branch=$(git branch --show-current)
 
 # Read one key as input.
@@ -57,6 +71,14 @@ git cherry -v \
     "$main_branch" \
     "$limit_tag" \
     | grep '^+' > "$cp_list"
+
+# Optionally drop features ("feat:", "feat(scope):", "feat!:", ...), which are
+# not backported to release branches.
+if [[ "$skip_feat" == "true" ]]; then
+  grep -vE '^\+ [a-fA-F0-9]+ feat(\([^)]*\))?!?:' "$cp_list" \
+      > "$cp_list.filtered" || true
+  mv "$cp_list.filtered" "$cp_list"
+fi
 
 # Remove the leading plus signs and trim the sha1s in the file to 8 characters,
 # to match what "git rebase -i" outputs.

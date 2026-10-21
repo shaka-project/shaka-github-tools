@@ -9,7 +9,7 @@ on:
   # additional types.  This is a good set that makes it easy to trigger the
   # workflow manually if needed.  This is not neccessary if your release-please
   # workflow uses a personal access token (PAT) from Shaka Bot.
-  pull_request_target:
+  pull_request:
     types:
       - opened
       - reopened

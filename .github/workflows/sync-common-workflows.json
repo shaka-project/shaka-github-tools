@@ -5,7 +5,6 @@
     "shaka-project/static-ffmpeg-binaries",
     "shaka-project/shaka-github-tools",
     "shaka-project/trace-anything",
-    "shaka-project/eme_logger",
     "shaka-project/generic-webdriver-server",
     "shaka-project/express-chocolatey-server",
     "shaka-project/shaka-player",
